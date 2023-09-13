@@ -7,7 +7,22 @@ const {
   DISCUSS_DB_COUNTER = 'd_counter'
 } = process.env
 
-const sequelize = new Sequelize(JSON.parse(D_SEQUELIZE_DB)[0])
+const sequelizeConfig = (() => {
+  switch (process.env.DISCUSS_DB_TYPE) {
+    case 'postgresql':
+      return {
+        dialectModule: require('pg'),
+        dialectOptions: {
+          ssl: true
+        }
+      }
+
+    default:
+      return void 0
+  }
+})()
+
+const sequelize = new Sequelize(JSON.parse(D_SEQUELIZE_DB)[0], sequelizeConfig)
 
 const ModelOptions = { freezeTableName: true, timestamps: false }
 
